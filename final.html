@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorpAdmin | Professional Portal</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.12);
+            --accent: #00f2fe;
+            --primary: #4facfe;
+            --danger: #ff4b5c;
+            --dark: #0f172a;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Animated Background */
+        .bg-animate {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #312e81, #1e1b4b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* STICKY NAVIGATION INFO */
+        .nav-info {
+            position:absolute;
+            top: 10px;
+            left: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+        }
+
+        /* LOGIN PAGE */
+        #loginPage {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: all 0.8s ease;
+        }
+
+        .login-box {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        /* DASHBOARD */
+        #dashboard {
+            display: none;
+            padding: 20px 8%;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .section { padding: 40px 0; }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(40px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* CENTERED EMAIL BOX STYLE */
+        .centered-field {
+            grid-column: 1 / span 2;
+            width: 50% !important;
+            justify-self: center;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,242,254,0.4); }
+
+        .emp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .emp-card {
+            background: rgba(255,255,255,0.06);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #interviewModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .modal-content {
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animate"></div>
+
+<div id="interviewModal">
+    <div class="modal-content glass-card">
+        <h1 style="color: var(--accent);">🗓️ Interview Schedule</h1>
+        <hr style="opacity: 0.2;">
+        <div style="font-size: 20px; line-height: 2.5;">
+            <p>• <strong>Senior Developer:</strong> Jan 28, 2026 - 10:00 AM (Zoom)</p>
+            <p>• <strong>UI/UX Designer:</strong> Jan 30, 2026 - 01:00 PM (Teams)</p>
+            <p>• <strong>HR Lead:</strong> Feb 02, 2026 - 11:00 AM (In-Person)</p>
+            <p>• <strong>DevOps Engineer:</strong> Feb 05, 2026 - 04:30 PM (Google Meet)</p>
+        </div>
+        <button class="btn-main" onclick="closeSlots()" style="background: var(--danger); margin-top: 30px;">Close Schedule</button>
+    </div>
+</div>
+
+<div id="loginPage">
+    <h1 style="font-size: 60px; margin-bottom: 10px;">💠</h1>
+    <div class="login-box">
+        <h2>Secure Login</h2>
+        <input type="text" id="user" placeholder="Admin Username"><br><br>
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn-main" style="width:100%; margin-top: 15px;" onclick="handleLogin()">Access Dashboard</button>
+        <p id="loginError" style="color:var(--danger); font-size:13px; margin-top:15px; display:none;">Invalid Credentials!</p>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div id="navInfo" class="nav-info" onclick="showAbout()">🏢 FISAL Tech Info</div>
+
+    <div class="section">
+        <div class="glass-card" style="border-left: 5px solid var(--accent);">
+            <h1 style="margin-top: 0;">🏢 FISAL Global</h1>
+            <p style="font-size: 18px; line-height: 1.6; opacity: 0.9;">
+                Welcome, Administrator. <BR>
+                FIZAL Global is a leader in decentralized workspace management. <BR>
+                "Ranked as a top-tier industry disruptor, our company prioritizes a 'people-first' philosophy."<br>
+                Our mission is to provide seamless digital infrastructure for teams worldwide.
+            </p>
+            <div style="display: flex; gap: 30px; margin-top: 25px; font-size: 14px;">
+                <div>SYSTEM STATUS: <span style="color: #22c55e; font-weight: bold;">● ONLINE</span></div>
+                <div>SERVER TIME: <span id="clock" style="font-family: monospace;">--:--</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="glass-card">
+            <h1 style="text-align: center;">➕ Register New Employee</h1>
+            <div class="form-grid">
+                <input type="text" id="inpName" placeholder="Full Name">
+                <input type="text" id="inpID" placeholder="Employee ID">
+                <input type="text" id="inpAddr" placeholder="Address">
+                <input type="text" id="inpRole" placeholder="Role">
+                <input type="text" id="inpEmail" class="centered-field" placeholder="Work Email">
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-main" onclick="processAdd()">Create Record</button>
+            </div>
+        </div>
+    </div>
+
+   <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h1 style="margin: 0;">👥 Employee Directory</h1>
+        <div style="position: relative; width: 250px;">
+            <input type="text" id="searchID" placeholder="Search by ID...🔍 " 
+                   onkeyup="renderUI()" 
+                   style="padding: 10px 15px; font-size: 14px; border-radius: 20px; background: rgba(255,255,255,0.1);">
+        </div>
+    </div>
+    <div id="employeeList" class="emp-grid"></div>
+</div>
+        <div class="glass-card" style="text-align: center;">
+            <h2>Quick Actions</h2>
+            <button class="btn-main" onclick="openSlots()">🗓️ View Full Interview Schedule</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const DB_KEY = 'corp_data_store';
+    let employees = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+
+    function handleLogin() {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+
+        if(u === 'salbi_01' && p === '12345') {
+            document.getElementById('loginPage').style.display = 'none';
+            const db = document.getElementById('dashboard');
+            db.style.display = 'block';
+            setTimeout(() => { db.style.opacity = '1'; }, 50);
+            updateClock();
+            renderUI();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function renderUI() {
+        const list = document.getElementById('employeeList');
+        const searchTerm = document.getElementById('searchID').value.toLowerCase();
+        
+        const filteredEmployees = employees.filter(emp => 
+            emp.id.toLowerCase().includes(searchTerm)
+        );
+
+        list.innerHTML = filteredEmployees.length ? '' : '<p style="opacity:0.5; grid-column: 1/-1; text-align: center;">No matching employee ID found.</p>';
+        
+        filteredEmployees.forEach((emp, i) => {
+            const originalIndex = employees.indexOf(emp);
+            
+            list.innerHTML += `
+                <div class="emp-card" style="animation: fadeIn 0.3s ease;">
+                    <h3 style="color:var(--accent); margin:0;">${emp.name}</h3>
+                    <p style="font-size:14px;"><strong>ID:</strong> ${emp.id} | <strong>Role:</strong> ${emp.role}</p>
+                    <p style="font-size:12px; opacity:0.7;">Email: ${emp.email}</p>
+                    <button class="btn-delete" onclick="deleteEmp(${originalIndex})">Remove</button>
+                </div>`;
+        });
+    }
+
+    function deleteEmp(i) {
+        if(confirm("Delete record?")) {
+            employees.splice(i, 1);
+            localStorage.setItem(DB_KEY, JSON.stringify(employees));
+            renderUI();
+        }
+    }
+
+    function updateClock() {
+        const clock = document.getElementById('clock');
+        if(clock) {
+            clock.innerText = new Date().toLocaleTimeString();
+            setTimeout(updateClock, 1000);
+        }
+    }
+
+    function showAbout() {
+        alert("TECHCORP SYSTEMS v2.4\nStatus: Online\nAdmin: authorized_01");
+    }
+
+    function openSlots() {
+        document.getElementById('interviewModal').style.display = 'flex';
+    }
+
+    function closeSlots() {
+        document.getElementById('interviewModal').style.display = 'none';
+    }
+
+    function processAdd() {
+        const inputs = {
+            name: document.getElementById('inpName'),
+            id: document.getElementById('inpID'),
+            role: document.getElementById('inpRole'),
+            email: document.getElementById('inpEmail'),
+            addr: document.getElementById('inpAddr')
+        };
+
+        if(!inputs.name.value || !inputs.id.value || !inputs.email.value) {
+            alert("⚠️ Please fill in all required fields.");
+            return;
+        }
+
+        const emailValue = inputs.email.value.toLowerCase();
+        const isFisal = emailValue.endsWith('@fisal.org');
+
+        if (!isFisal) {
+            alert("❌ Invalid Email Domain!\n\nWork emails must end in: @fisal.org");
+            return;
+        }
+
+        const newEmp = {
+            name: inputs.name.value,
+            id: inputs.id.value,
+            role: inputs.role.value,
+            email: emailValue,
+            addr: inputs.addr.value
+        };
+
+        employees.push(newEmp);
+        localStorage.setItem(DB_KEY, JSON.stringify(employees));
+        renderUI();
+        
+        Object.values(inputs).forEach(i => i.value = '');
+        alert("✅ Record successfully deployed to Corporate Database");
+    }
+</script>
+</body>
+</html>
